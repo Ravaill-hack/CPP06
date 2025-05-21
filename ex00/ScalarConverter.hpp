@@ -14,10 +14,6 @@ class ScalarConverter
 	public:
 		~ScalarConverter();
 		static void	convert(std::string nb);
-		operator float();
-		operator int();
-		operator char();
-		operator double();
 
 		class EmptyInput : public std::exception
 		{
@@ -39,11 +35,10 @@ class ScalarConverter
 
 enum enType {T_FLOAT, T_INT, T_CHAR, T_DOUBLE, T_INVALID};
 
-static enType	FindType(std::string nb);
-
-int				toInt(std::string nb);
-char			toChar(std::string nb);
-float			toFloat(std::string nb);
-double			toDouble(std::string nb);
+enType			FindType(std::string nb);
+void			printFromInt(int nb_i);
+void			printFromDouble(double nb_d);
+void			printFromChar(char nb_c);
+void			printFromFloat(float nb_f);
 
 #endif

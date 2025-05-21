@@ -6,7 +6,7 @@
 /*   By: lmatkows <lmatkows@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 14:38:23 by lmatkows          #+#    #+#             */
-/*   Updated: 2025/05/20 16:43:27 by lmatkows         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:05:56 by lmatkows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,14 @@ ScalarConverter::ScalarConverter(){}
 
 ScalarConverter::~ScalarConverter(){}
 
-ScalarConverter::ScalarConverter(const ScalarConverter & toCopy){}
+ScalarConverter::ScalarConverter(const ScalarConverter & toCopy)
+{
+	(void)toCopy;
+}
 
 ScalarConverter	&ScalarConverter::operator=(const ScalarConverter& toCopy)
 {
+	(void)toCopy;
 	return (*this);
 }
 
@@ -37,40 +41,34 @@ ScalarConverter	&ScalarConverter::operator=(const ScalarConverter& toCopy)
 
 void	ScalarConverter::convert(std::string nb)
 {
-	int			nb_int = 0;
-	float		nb_float = 0.0f;
-	double		nb_double = 0.0;
-	char		nb_char = 0;
+	int					nb_i = 0;
+	float				nb_f = 0.0f;
+	double				nb_d = 0.0;
+	char				nb_c = 0;
+	enType				ttype = FindType(nb);
+	std::stringstream	ss(nb);
 	
 	try
 	{
-		enType	ttype = FindType(nb);
-	
+		if (nb.empty())
+			throw ScalarConverter::EmptyInput();
 		switch (ttype)
 		{
 			case T_FLOAT:
-				nb_float = toFloat(nb);
-				nb_int = static_cast<int>(nb_float);
-				nb_double = static_cast<double>(nb_float);
-				nb_char = static_cast<char>(nb_float);
+				ss >> nb_f;
+				printFromFloat(nb_f);
 				break;
 			case T_INT:
-				nb_int = toInt(nb);
-				nb_float = static_cast<float>(nb_int);
-				nb_double = static_cast<double>(nb_int);
-				nb_char = static_cast<char>(nb_int);
+				ss >> nb_i;
+				printFromInt(nb_i);
 				break;
 			case T_CHAR:
-				nb_char = toChar(nb);
-				nb_float = static_cast<float>(nb_char);
-				nb_int = static_cast<int>(nb_char);
-				nb_double = static_cast<double>(nb_char);
+				nb_c = nb.at(0);
+				printFromChar(nb_c);
 				break;
 			case T_DOUBLE:
-				nb_double = toDouble(nb);
-				nb_int = static_cast<int>(nb_double);
-				nb_float = static_cast<float>(nb_double);
-				nb_char = static_cast<char>(nb_double);
+				ss >> nb_d;
+				printFromDouble(nb_d);
 				break;
 			default:
 				;
@@ -84,11 +82,6 @@ void	ScalarConverter::convert(std::string nb)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	
-	std::cout << "char: " << std::endl;
-	std::cout << "int: " << std::endl;
-	std::cout << "float: " << std::endl;
-	std::cout << "double: " << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -115,63 +108,129 @@ const char * ScalarConverter::EmptyInput::what() const throw()
 
 bool	isFloat(std::string nb)
 {
-	
+	if (nb.empty())
+		return (false);
+		
+	std::stringstream	ss(nb);
+	float				nb_f;
+	ss >> nb_f;
+	if (ss.fail())
+		return (false);
+	return (true);
 }
 
 bool	isDouble(std::string nb)
 {
-	
+	if (nb.empty())
+		return (false);
+		
+	std::stringstream	ss(nb);
+	double				nb_d;
+	ss >> nb_d;
+	if (ss.fail())
+		return (false);
+	return (true);
 }
 
 bool	isChar(std::string nb)
 {
-	if (nb.length() != 1)
+	if (nb.empty())
 		return (false);
-	if (nb[0] >= )
+	if (nb.at(0) >= -128 && nb.at(0) <= 127 && isdigit(nb.at(0)) == false)
+		return (true);
+	return (false);
 }
 
 bool	isInt(std::string nb)
 {
-	
+	if (nb.empty())
+		return (false);
+		
+	std::stringstream	ss(nb);
+	int					nb_i;
+	ss >> nb_i;
+	if (ss.fail())
+		return (false);
+	return (true);
 }
 
-
-static enType	FindType(std::string nb)
+enType	FindType(std::string nb)
 {
-	int	f = 1;
-
-	if (isChar())
-	if (nb[nb.length() - 1] == 'f')
+	if (isChar(nb))
+		return (T_CHAR);
+	else if (isFloat(nb))
+		return (T_FLOAT);
+	else if (isDouble(nb))
+		return (T_DOUBLE);
+	else if (isInt(nb))
+		return (T_INT);
+	else
 	{
-		if (nb.find('.') != nb.npos && nb.rfind('.') == nb.find('.'))
-		{
-			for (int i = 0; nb.length() - 1; i++)
-			{
-				if ((nb[i] < '0' || nb[i] > '9') && nb[i] != '.')
-					f = 0;
-			}
-			if (f == 1)
-				return (T_FLOAT);
-		}
+		throw ScalarConverter::IncorrectSyntax();
+		return (T_INVALID);
 	}
 }
 
-int				toInt(std::string nb)
+void	printFromFloat(float nb_f)
 {
+	char	nb_c = static_cast<char>(nb_f);
+	int		nb_i = static_cast<int>(nb_f);
+	double	nb_d = static_cast<double>(nb_f);
 	
+	std::cout << "char: '";
+	if (nb_c >= 32 && nb_c <= 126)
+		std::cout << nb_c << "'" << std::endl;
+	else
+		std::cout << "Non displayable" <<std::endl;
+	std::cout << "int: " << nb_i << std::endl;
+	std::cout << "float: " << nb_f << std::endl;
+	std::cout << "double: " << nb_d << std::endl;
 }
 
-char			toChar(std::string nb)
+void	printFromChar(char nb_c)
 {
+	float	nb_f = static_cast<float>(nb_c);
+	int		nb_i = static_cast<int>(nb_c);
+	double	nb_d = static_cast<double>(nb_c);
 	
+	std::cout << "char: '";
+	if (nb_c >= 32 && nb_c <= 126)
+		std::cout << nb_c << "'" << std::endl;
+	else
+		std::cout << "Non displayable" <<std::endl;
+	std::cout << "int: " << nb_i << std::endl;
+	std::cout << "float: " << nb_f << std::endl;
+	std::cout << "double: " << nb_d << std::endl;
 }
 
-float			toFloat(std::string nb)
+void	printFromDouble(double nb_d)
 {
+	float	nb_f = static_cast<float>(nb_d);
+	int		nb_i = static_cast<int>(nb_d);
+	char	nb_c = static_cast<char>(nb_d);
 	
+	std::cout << "char: '";
+	if (nb_c >= 32 && nb_c <= 126)
+		std::cout << nb_c << "'" << std::endl;
+	else
+		std::cout << "Non displayable" <<std::endl;
+	std::cout << "int: " << nb_i << std::endl;
+	std::cout << "float: " << nb_f << std::endl;
+	std::cout << "double: " << nb_d << std::endl;
 }
 
-double			toDouble(std::string nb)
+void	printFromInt(int nb_i)
 {
+	char	nb_c = static_cast<char>(nb_i);
+	float	nb_f = static_cast<float>(nb_i);
+	double	nb_d = static_cast<double>(nb_i);
 	
+	std::cout << "char: '";
+	if (nb_c >= 32 && nb_c <= 126)
+		std::cout << nb_c << "'" << std::endl;
+	else
+		std::cout << "Non displayable" <<std::endl;
+	std::cout << "int: " << nb_i << std::endl;
+	std::cout << "float: " << nb_f << std::endl;
+	std::cout << "double: " << nb_d << std::endl;
 }
