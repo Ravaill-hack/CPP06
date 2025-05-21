@@ -6,7 +6,7 @@
 /*   By: lmatkows <lmatkows@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 14:38:23 by lmatkows          #+#    #+#             */
-/*   Updated: 2025/05/21 11:05:56 by lmatkows         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:17:37 by lmatkows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,10 @@ ScalarConverter	&ScalarConverter::operator=(const ScalarConverter& toCopy)
 
 void	ScalarConverter::convert(std::string nb)
 {
-	int					nb_i = 0;
-	float				nb_f = 0.0f;
-	double				nb_d = 0.0;
-	char				nb_c = 0;
+	int					nb_i;
+	float				nb_f;
+	double				nb_d;
+	char				nb_c;
 	enType				ttype = FindType(nb);
 	std::stringstream	ss(nb);
 	
@@ -54,21 +54,21 @@ void	ScalarConverter::convert(std::string nb)
 			throw ScalarConverter::EmptyInput();
 		switch (ttype)
 		{
-			case T_FLOAT:
-				ss >> nb_f;
-				printFromFloat(nb_f);
+			case T_CHAR:
+				nb_c = nb.at(0);
+				printFromChar(nb_c);
 				break;
 			case T_INT:
 				ss >> nb_i;
 				printFromInt(nb_i);
 				break;
-			case T_CHAR:
-				nb_c = nb.at(0);
-				printFromChar(nb_c);
-				break;
 			case T_DOUBLE:
 				ss >> nb_d;
 				printFromDouble(nb_d);
+				break;
+			case T_FLOAT:
+				ss >> nb_f;
+				printFromFloat(nb_f);
 				break;
 			default:
 				;
@@ -158,12 +158,12 @@ enType	FindType(std::string nb)
 {
 	if (isChar(nb))
 		return (T_CHAR);
-	else if (isFloat(nb))
-		return (T_FLOAT);
-	else if (isDouble(nb))
-		return (T_DOUBLE);
 	else if (isInt(nb))
 		return (T_INT);
+	else if (isDouble(nb))
+		return (T_DOUBLE);
+	else if (isFloat(nb))
+		return (T_FLOAT);
 	else
 	{
 		throw ScalarConverter::IncorrectSyntax();
@@ -199,8 +199,8 @@ void	printFromChar(char nb_c)
 	else
 		std::cout << "Non displayable" <<std::endl;
 	std::cout << "int: " << nb_i << std::endl;
-	std::cout << "float: " << nb_f << std::endl;
-	std::cout << "double: " << nb_d << std::endl;
+	std::cout << "float: " << nb_f << ".0f" << std::endl;
+	std::cout << "double: " << nb_d << ".0" << std::endl;
 }
 
 void	printFromDouble(double nb_d)
@@ -231,6 +231,6 @@ void	printFromInt(int nb_i)
 	else
 		std::cout << "Non displayable" <<std::endl;
 	std::cout << "int: " << nb_i << std::endl;
-	std::cout << "float: " << nb_f << std::endl;
-	std::cout << "double: " << nb_d << std::endl;
+	std::cout << "float: " << nb_f << ".0f" << std::endl;
+	std::cout << "double: " << nb_d << ".0" << std::endl;
 }
