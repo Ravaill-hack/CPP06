@@ -6,7 +6,7 @@
 /*   By: lmatkows <lmatkows@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 14:38:23 by lmatkows          #+#    #+#             */
-/*   Updated: 2025/05/23 13:32:05 by lmatkows         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:37:11 by lmatkows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,7 +283,7 @@ void	printFromInt(int nb_i)
 	std::cout << "char: ";
 	if (nb_i < -128 || nb_i > 127)
 		std::cout << "impossible" << std::endl;
-	else if (nb_c >= 32 && nb_c <= 126)
+	else if ((nb_c >= 32 && nb_c <= 126))
 		std::cout << "'" << nb_c << "'" << std::endl;
 	else
 		std::cout << "Non displayable" <<std::endl;
