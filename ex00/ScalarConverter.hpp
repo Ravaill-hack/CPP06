@@ -37,8 +37,8 @@ enum enType {T_FLOAT, T_INT, T_CHAR, T_DOUBLE, T_INVALID};
 
 enType			FindType(std::string nb);
 void			printFromInt(int nb_i);
-void			printFromDouble(double nb_d);
+void			printFromDouble(double nb_d, std::string nb);
 void			printFromChar(char nb_c);
-void			printFromFloat(float nb_f);
+void			printFromFloat(float nb_f, std::string nb);
 
 #endif

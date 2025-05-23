@@ -6,7 +6,7 @@
 /*   By: lmatkows <lmatkows@student.42perpignan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 14:38:23 by lmatkows          #+#    #+#             */
-/*   Updated: 2025/05/23 11:43:57 by lmatkows         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:32:05 by lmatkows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,23 +56,19 @@ void	ScalarConverter::convert(std::string nb)
 		{
 			case T_CHAR:
 				nb_c = nb.at(0);
-				std::cout << "j'ai rentre un char" << std::endl;
 				printFromChar(nb_c);
 				break;
 			case T_INT:
 				ss >> nb_i;
-				std::cout << "j'ai rentre un int" << std::endl;
 				printFromInt(nb_i);
 				break;
 			case T_DOUBLE:
 				ss >> nb_d;
-				std::cout << "j'ai rentre un double" << std::endl;
-				printFromDouble(nb_d);
+				printFromDouble(nb_d, nb);
 				break;
 			case T_FLOAT:
 				ss >> nb_f;
-				std::cout << "j'ai rentre un float" << std::endl;
-				printFromFloat(nb_f);
+				printFromFloat(nb_f, nb);
 				break;
 			default:
 				;
@@ -112,7 +108,6 @@ const char * ScalarConverter::EmptyInput::what() const throw()
 
 bool	isFloat(std::string nb)
 {
-	char leftover;
 	if (nb.empty())
 		return (false);
 	if (nb == "+inff" || nb == "-inff" || nb == "nanf")
@@ -126,8 +121,6 @@ bool	isFloat(std::string nb)
 	ss >> nb_f;
 	if (ss.fail())
 		return (false);
-	if (ss >> leftover)
-		return false;
 	return (true);
 }
 
@@ -191,20 +184,42 @@ enType	FindType(std::string nb)
 	}
 }
 
-void	printFromFloat(float nb_f)
+void	printFromFloat(float nb_f, std::string nb)
 {
 	char	nb_c = static_cast<char>(nb_f);
 	int		nb_i = static_cast<int>(nb_f);
 	double	nb_d = static_cast<double>(nb_f);
 	
-	std::cout << "char: ";
-	if (nb_c >= 32 && nb_c <= 126)
-		std::cout << "'" << nb_c << "'" << std::endl;
+	
+	if (nb != "+inff" && nb != "-inff" && nb != "nanf")
+	{
+		std::cout << "char: ";
+		if (nb_f < -128 || nb_f > 127)
+			std::cout << "impossible" << std::endl;
+		else if (nb_c >= 32 && nb_c <= 126)
+			std::cout << "'" << nb_c << "'" << std::endl;
+		else
+			std::cout << "Non displayable" <<std::endl;
+		std::cout << "int: " << nb_i << std::endl;
+		std::cout << "float: " << nb_f;
+		if (static_cast<float>(static_cast<int>(nb_f)) == nb_f)
+			std::cout << ".0";
+		std::cout << "f" << std::endl;
+		std::cout << "double: " << nb_d;
+		if (static_cast<double>(static_cast<int>(nb_f)) == nb_f)
+			std::cout << ".0" << std::endl;
+		else
+			std::cout << std::endl;
+	}
 	else
-		std::cout << "Non displayable" <<std::endl;
-	std::cout << "int: " << nb_i << std::endl;
-	std::cout << "float: " << nb_f << std::endl;
-	std::cout << "double: " << nb_d << std::endl;
+	{
+		std::cout << "char: impossible" << std::endl;
+		std::cout << "int: impossible" << std::endl;
+		std::cout << "float: ";
+		std::cout << nb << std::endl;
+		nb.erase(nb.size() - 1);
+		std::cout << "double: " << nb << std::endl;
+	}
 }
 
 void	printFromChar(char nb_c)
@@ -223,20 +238,40 @@ void	printFromChar(char nb_c)
 	std::cout << "double: " << nb_d << ".0" << std::endl;
 }
 
-void	printFromDouble(double nb_d)
+void	printFromDouble(double nb_d, std::string nb)
 {
 	float	nb_f = static_cast<float>(nb_d);
 	int		nb_i = static_cast<int>(nb_d);
 	char	nb_c = static_cast<char>(nb_d);
 	
-	std::cout << "char: ";
-	if (nb_c >= 32 && nb_c <= 126)
-		std::cout << "'" << nb_c << "'" << std::endl;
+	if (nb != "+inf" && nb != "-inf" && nb != "nan")
+	{
+		std::cout << "char: ";
+		if (nb_d < -128 || nb_d > 127)
+			std::cout << "impossible" << std::endl;
+		else if (nb_c >= 32 && nb_c <= 126)
+			std::cout << "'" << nb_c << "'" << std::endl;
+		else
+			std::cout << "Non displayable" <<std::endl;
+		std::cout << "int: " << nb_i << std::endl;
+		std::cout << "float: " << nb_f;
+		if (static_cast<float>(static_cast<int>(nb_d)) == nb_d)
+			std::cout << ".0";
+		std::cout << "f" << std::endl;
+		std::cout << "double: " << nb_d;
+		if (static_cast<double>(static_cast<int>(nb_d)) == nb_d)
+			std::cout << ".0" << std::endl;
+		else
+			std::cout << std::endl;
+	}
 	else
-		std::cout << "Non displayable" <<std::endl;
-	std::cout << "int: " << nb_i << std::endl;
-	std::cout << "float: " << nb_f << std::endl;
-	std::cout << "double: " << nb_d << std::endl;
+	{
+		std::cout << "char: impossible" << std::endl;
+		std::cout << "int: impossible" << std::endl;
+		std::cout << "float: ";
+		std::cout << nb << "f" << std::endl;
+		std::cout << "double: " << nb << std::endl;
+	}
 }
 
 void	printFromInt(int nb_i)
@@ -246,7 +281,9 @@ void	printFromInt(int nb_i)
 	double	nb_d = static_cast<double>(nb_i);
 	
 	std::cout << "char: ";
-	if (nb_c >= 32 && nb_c <= 126)
+	if (nb_i < -128 || nb_i > 127)
+		std::cout << "impossible" << std::endl;
+	else if (nb_c >= 32 && nb_c <= 126)
 		std::cout << "'" << nb_c << "'" << std::endl;
 	else
 		std::cout << "Non displayable" <<std::endl;
